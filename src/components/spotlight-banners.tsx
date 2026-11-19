@@ -72,7 +72,7 @@ export function SpotlightBanners({ categories, services }: { categories: Service
   const arrow = "absolute top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-[#E2D9D0] bg-white text-[#1C1917] shadow-md transition hover:border-[#800020] hover:text-[#800020] disabled:cursor-default disabled:opacity-40 disabled:hover:border-[#E2D9D0] disabled:hover:text-[#1C1917] sm:grid";
 
   return (
-    <section className="container pt-10 pb-10" aria-labelledby="spotlight-heading">
+    <section className="container py-8 sm:py-12" aria-labelledby="spotlight-heading">
       <h2 id="spotlight-heading" className="mb-4 text-xl font-bold text-[#1C1917] sm:text-2xl">In the spotlight</h2>
       <div className="relative">
         <ul ref={rowRef}

@@ -43,7 +43,7 @@ export function MostBookedServices({ services, title = "Most booked services", i
   if (services.length === 0) return null;
 
   return (
-    <section className="container pb-10" aria-labelledby={`${id}-heading`}>
+    <section className="container py-8 sm:py-12" aria-labelledby={`${id}-heading`}>
       <h2 id={`${id}-heading`} className="mb-4 text-xl font-bold text-[#1C1917] sm:text-2xl">{title}</h2>
       <div className="relative">
         <ul ref={rowRef}

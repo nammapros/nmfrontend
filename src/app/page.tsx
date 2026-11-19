@@ -24,9 +24,9 @@ export default async function Home() {
   const trust = data?.trust_stats;
 
   return (
-    <main className="bg-[#FBF8F5]">
+    <main className="bg-white">
       {/* 1. Split Hero Banner (Blush Rose #FBECEF + Technician on Right) */}
-      <section id="categories" className="relative scroll-mt-20 overflow-hidden border-b border-[#EAE3DC] bg-white pt-6 pb-6 text-[#1C1917] sm:pt-8 sm:pb-0">
+      <section id="categories" className="relative scroll-mt-20 overflow-hidden border-b border-[#EAE3DC] bg-white pt-6 pb-8 text-[#1C1917] sm:pt-8 sm:pb-0">
         <div className="container grid items-end gap-6 lg:grid-cols-[1.08fr_0.92fr] lg:gap-6">
           <div className="max-w-xl pb-6 lg:pb-10">
             <h1 className="mb-5 text-2xl font-bold tracking-tight text-[#1C1917] sm:mb-6 sm:text-4xl">
@@ -79,7 +79,7 @@ export default async function Home() {
 
       {/* 6. From homes near you */}
       {reviews.length > 0 && (
-        <section className="container py-10">
+        <section className="container py-8 sm:py-12">
           <h2 className="mb-5 font-serif text-2xl font-semibold text-[#1C1917] sm:text-3xl">From homes near you</h2>
           <div className="grid gap-4 md:grid-cols-3">
             {reviews.map((rev) => {
@@ -99,7 +99,7 @@ export default async function Home() {
                       “{rev.comment || "Smooth visit, clear communication, and tidy finish."}”
                     </p>
                     {rev.photo_url && resolveUploadedMediaUrl(rev.photo_url) && (
-                      <div className="relative mt-3 aspect-[16/7] w-full overflow-hidden rounded-md bg-[#FAF6F2]">
+                      <div className="relative mt-3 aspect-[16/7] w-full overflow-hidden rounded-md bg-slate-50">
                         <ServiceImage src={rev.photo_url} alt={`Work done for ${rev.customer_name}`} fit="contain" />
                       </div>
                     )}
@@ -123,7 +123,7 @@ export default async function Home() {
       )}
 
       {/* 7. App download banner */}
-      <section className="container pt-4 pb-10" aria-label="Get the NammaPros app">
+      <section className="container py-8 sm:py-12" aria-label="Get the NammaPros app">
         <Image
           src="/images/brand/app-download-banner.webp"
           alt="All your home services, just one place. Download the NammaPros app on the App Store or Google Play."

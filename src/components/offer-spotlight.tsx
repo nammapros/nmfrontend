@@ -24,7 +24,7 @@ export function OfferSpotlight({ banners }: { banners: HomepageBannerItem[] }) {
   const imgUrl = resolveUploadedMediaUrl(active.desktop_image_url || active.mobile_image_url);
 
   return (
-    <section className="container py-8">
+    <section className="container py-8 sm:py-12">
       <div className="overflow-hidden rounded-lg bg-[#27201C] text-white shadow-[0_14px_38px_rgba(28,25,23,0.12)]">
         <div className={`grid items-stretch ${imgUrl ? "md:grid-cols-2" : ""}`}>
           <div className="flex flex-col justify-center space-y-3 p-7 sm:p-10">
