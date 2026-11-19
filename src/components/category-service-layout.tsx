@@ -1,7 +1,7 @@
 "use client";
 
 import type { Service, ServiceCategory, ServicePackage } from "@nammapros/types";
-import { BadgeCheck, Check, ChevronRight, Clock, IndianRupee, Minus, Plus, ShieldCheck, ShoppingBag, Star } from "lucide-react";
+import { BadgeCheck, Check, ChevronDown, ChevronRight, Clock, HelpCircle, IndianRupee, Minus, Plus, ShieldCheck, ShoppingBag, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";
@@ -63,6 +63,8 @@ export function CategoryServiceLayout({ category, services, initialService }: { 
   const [active, setActive] = useState<string>(groups[0]?.key ?? "");
   const [detail, setDetail] = useState<Service | null>(null);
   const [bannerFailed, setBannerFailed] = useState(false);
+  const [categoryFaqs, setCategoryFaqs] = useState<Array<{ question: string; answer: string; serviceName?: string }>>([]);
+  const [openCatFaq, setOpenCatFaq] = useState<number | null>(0);
   const rating = ratingOf(services);
   const banner = getCategoryBannerSrc(category);
   const hasBanner = Boolean(banner && !bannerFailed);
@@ -70,6 +72,49 @@ export function CategoryServiceLayout({ category, services, initialService }: { 
     const prices = services.flatMap((s) => (s.packages ?? []).map((p) => getPackageUnitPaise(s, p))).filter((p): p is number => p != null);
     return prices.length ? Math.min(...prices) : null;
   }, [services]);
+
+  useEffect(() => {
+    let active = true;
+    const origin = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000").replace(/\/$/, "");
+    const map = new Map<string, { question: string; answer: string; serviceName?: string }>();
+
+    for (const s of services) {
+      for (const f of s.faqs ?? []) {
+        if (f?.question?.trim() && f?.answer?.trim()) {
+          const key = f.question.trim().toLowerCase();
+          if (!map.has(key)) {
+            map.set(key, { question: f.question.trim(), answer: f.answer.trim(), serviceName: s.name });
+          }
+        }
+      }
+    }
+
+    if (category.id) {
+      fetch(`${origin}/api/v1/faqs/?category_id=${encodeURIComponent(category.id)}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (!active || !data?.results) return;
+          for (const f of data.results) {
+            if (f?.question?.trim() && f?.answer?.trim()) {
+              const key = f.question.trim().toLowerCase();
+              if (!map.has(key)) {
+                map.set(key, { question: f.question.trim(), answer: f.answer.trim() });
+              }
+            }
+          }
+          if (active) setCategoryFaqs(Array.from(map.values()));
+        })
+        .catch(() => {
+          if (active) setCategoryFaqs(Array.from(map.values()));
+        });
+    } else {
+      setCategoryFaqs(Array.from(map.values()));
+    }
+
+    return () => {
+      active = false;
+    };
+  }, [category.id, services]);
 
   // Keep the address in the form /services?city=<city>&category=<category>[&service=<service>].
   useEffect(() => {
@@ -237,6 +282,53 @@ export function CategoryServiceLayout({ category, services, initialService }: { 
                 </ul>
               </section>
             ))}
+
+            {/* Category FAQs */}
+            {categoryFaqs.length > 0 && (
+              <section className="mt-8 border-t border-[#EAE3DC] pt-8 pb-4" aria-labelledby="category-faqs-h">
+                <div className="flex items-center gap-2 mb-4">
+                  <HelpCircle size={18} className="text-[#800020]" />
+                  <h2 id="category-faqs-h" className="text-xl font-bold text-[#1C1917]">
+                    Frequently asked questions
+                  </h2>
+                </div>
+                <div className="rounded-xl border border-[#EAE3DC] bg-white p-5 divide-y divide-[#F4EFE9]">
+                  {categoryFaqs.map((faq, idx) => {
+                    const isOpen = openCatFaq === idx;
+                    return (
+                      <div key={idx} className="py-3.5 first:pt-1 last:pb-1">
+                        <button
+                          type="button"
+                          onClick={() => setOpenCatFaq(isOpen ? null : idx)}
+                          aria-expanded={isOpen}
+                          className="flex w-full items-start justify-between gap-3 text-left font-semibold text-sm text-[#1C1917] hover:text-[#800020] transition"
+                        >
+                          <div>
+                            <span>{faq.question}</span>
+                            {faq.serviceName && (
+                              <span className="block mt-0.5 text-[11px] font-normal text-[#78716C]">
+                                For {faq.serviceName}
+                              </span>
+                            )}
+                          </div>
+                          <ChevronDown
+                            size={16}
+                            className={`mt-0.5 shrink-0 text-[#78716C] transition-transform duration-200 ${
+                              isOpen ? "rotate-180 text-[#800020]" : ""
+                            }`}
+                          />
+                        </button>
+                        {isOpen && (
+                          <p className="mt-2 text-xs leading-relaxed text-[#57534E]">
+                            {faq.answer}
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
           </div>
         </div>
 

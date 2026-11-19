@@ -1,10 +1,10 @@
 "use client";
 
 import type { PublicReview, Service } from "@nammapros/types";
-import { ArrowRight, Check, Clock, Minus, Plus, ShieldCheck, Sparkles, Star, X } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Clock, HelpCircle, Minus, Plus, ShieldCheck, Sparkles, Star, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useId, useRef, useState } from "react";
+import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import { getPackageUnitPaise, useBookingCart } from "@/components/booking-cart-provider";
 import { ServiceImage } from "@/components/service-image";
 import { bookingApi } from "@/lib/booking-api";
@@ -50,6 +50,8 @@ export function ServiceDetailModal({ service: baseService, onClose, syncUrl = tr
   );
   const [selectedPkgIndex, setSelectedPkgIndex] = useState(defaultIdx);
   const [addedFeedback, setAddedFeedback] = useState(false);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const [remoteFaqs, setRemoteFaqs] = useState<Array<{ question: string; answer: string }>>([]);
 
   const { items, addToCart, openSheet, updateItemQuantity } = useBookingCart();
   const titleId = useId();
@@ -77,6 +79,43 @@ export function ServiceDetailModal({ service: baseService, onClose, syncUrl = tr
     (pkg?.exclusions && pkg.exclusions.length > 0 ? pkg.exclusions : service.exclusions) ?? [];
   const brands = (service.brands ?? []).filter((b) => Boolean(b?.name?.trim()));
   const fullDescription = service.description || service.full_description || service.summary;
+
+  useEffect(() => {
+    const sId = service.id;
+    if (!sId) return;
+    let active = true;
+    const origin = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000").replace(/\/$/, "");
+    fetch(`${origin}/api/v1/faqs/?service_id=${encodeURIComponent(sId)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!active || !data?.results) return;
+        const items = data.results.map((r: { question: string; answer: string }) => ({
+          question: r.question,
+          answer: r.answer,
+        }));
+        setRemoteFaqs(items);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [service.id]);
+
+  const faqs = useMemo(() => {
+    const direct = service.faqs ?? [];
+    const map = new Map<string, { question: string; answer: string }>();
+    for (const f of direct) {
+      if (f?.question?.trim() && f?.answer?.trim()) {
+        map.set(f.question.trim().toLowerCase(), { question: f.question.trim(), answer: f.answer.trim() });
+      }
+    }
+    for (const f of remoteFaqs) {
+      if (f?.question?.trim() && f?.answer?.trim() && !map.has(f.question.trim().toLowerCase())) {
+        map.set(f.question.trim().toLowerCase(), { question: f.question.trim(), answer: f.answer.trim() });
+      }
+    }
+    return Array.from(map.values());
+  }, [service.faqs, remoteFaqs]);
 
   // Body scroll lock, focus save/restore, Esc & focus trap
   useEffect(() => {
@@ -381,6 +420,43 @@ export function ServiceDetailModal({ service: baseService, onClose, syncUrl = tr
                     <strong className="text-[#1C1917]">Important note:</strong> {service.important_notes}
                   </p>
                 )}
+              </section>
+            )}
+
+            {/* FAQs for this particular service */}
+            {faqs.length > 0 && (
+              <section aria-label="Frequently asked questions" className="space-y-3 rounded-lg bg-white p-4 shadow-2xs">
+                <h3 className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#57534E]">
+                  <HelpCircle size={15} className="text-[#800020]" /> Frequently asked questions
+                </h3>
+                <div className="divide-y divide-[#F4EFE9]">
+                  {faqs.map((faq, idx) => {
+                    const isOpen = openFaqIndex === idx;
+                    return (
+                      <div key={idx} className="py-2.5 first:pt-0 last:pb-0">
+                        <button
+                          type="button"
+                          onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
+                          aria-expanded={isOpen}
+                          className="flex w-full items-start justify-between gap-3 text-left font-semibold text-xs text-[#1C1917] hover:text-[#800020] transition"
+                        >
+                          <span className="leading-snug">{faq.question}</span>
+                          <ChevronDown
+                            size={14}
+                            className={`mt-0.5 shrink-0 text-[#78716C] transition-transform duration-200 ${
+                              isOpen ? "rotate-180 text-[#800020]" : ""
+                            }`}
+                          />
+                        </button>
+                        {isOpen && (
+                          <p className="mt-2 text-xs leading-relaxed text-[#57534E]">
+                            {faq.answer}
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </section>
             )}
 
