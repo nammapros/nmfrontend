@@ -63,7 +63,7 @@ export default async function CityLandingPage({ params }: { params: Promise<{ la
     : null;
 
   return (
-    <main className="bg-[#FBF8F5]">
+    <main className="bg-white">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       {faqLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd).replace(/</g, "\\u003c") }} />}
 

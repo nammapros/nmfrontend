@@ -2,6 +2,7 @@
 
 import type { Service, ServiceCategory, ServicePackage } from "@nammapros/types";
 import { BadgeCheck, Check, ChevronRight, Clock, IndianRupee, Minus, Plus, ShieldCheck, ShoppingBag, Star } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";
 import { getPackageUnitPaise, pickDefaultPackage, useBookingCart } from "@/components/booking-cart-provider";
@@ -61,8 +62,10 @@ export function CategoryServiceLayout({ category, services, initialService }: { 
   const groups = useMemo(() => groupServices(category, services), [category, services]);
   const [active, setActive] = useState<string>(groups[0]?.key ?? "");
   const [detail, setDetail] = useState<Service | null>(null);
+  const [bannerFailed, setBannerFailed] = useState(false);
   const rating = ratingOf(services);
   const banner = getCategoryBannerSrc(category);
+  const hasBanner = Boolean(banner && !bannerFailed);
   const startsAt = useMemo(() => {
     const prices = services.flatMap((s) => (s.packages ?? []).map((p) => getPackageUnitPaise(s, p))).filter((p): p is number => p != null);
     return prices.length ? Math.min(...prices) : null;
@@ -162,29 +165,59 @@ export function CategoryServiceLayout({ category, services, initialService }: { 
 
         {/* CENTRE */}
         <div className="min-w-0">
-          <div className="relative overflow-hidden rounded-2xl bg-[#F6E7EB]">
-            <div className="grid min-h-[180px] items-center sm:grid-cols-2">
-              <div className="relative z-10 p-6 sm:p-8">
-                <span className="inline-flex items-center gap-1 rounded-md bg-[#800020] px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
-                  <BadgeCheck size={13} aria-hidden="true" /> Verified pros
-                </span>
-                {/* Wording is editable in admin: banner title = headline, banner subtitle = second line ({price} = lowest price). */}
-                <p className="mt-3 text-xl font-bold leading-tight text-[#1C1917] sm:text-2xl xl:text-3xl">{category.banner_title || `${category.name} at your doorstep`}</p>
-                {(() => {
-                  const price = startsAt != null ? formatInr(startsAt) : "";
-                  const line = category.banner_subtitle
-                    ? category.banner_subtitle.replaceAll("{price}", price)
-                    : price ? `Starts at ${price}` : "";
-                  return line ? <p className="mt-2 text-base text-[#44403C]">{line}</p> : null;
-                })()}
-              </div>
-              {banner && (
-                <div className="relative hidden h-full min-h-[200px] sm:block">
-                  <ServiceImage src={banner} alt="" fit="cover" priority />
-                </div>
+          {hasBanner ? (
+            <div className="relative w-full overflow-hidden rounded-2xl bg-slate-100 shadow-sm">
+              {category.banner_button_link ? (
+                <Link href={category.banner_button_link} className="group block w-full">
+                  <Image
+                    src={banner!}
+                    alt={category.banner_title || `${category.name} banner`}
+                    width={1200}
+                    height={400}
+                    priority
+                    unoptimized
+                    className="block h-auto w-full rounded-2xl object-cover transition-transform duration-300 group-hover:scale-[1.01]"
+                    onError={() => setBannerFailed(true)}
+                  />
+                </Link>
+              ) : (
+                <Image
+                  src={banner!}
+                  alt={category.banner_title || `${category.name} banner`}
+                  width={1200}
+                  height={400}
+                  priority
+                  unoptimized
+                  className="block h-auto w-full rounded-2xl object-cover"
+                  onError={() => setBannerFailed(true)}
+                />
               )}
             </div>
-          </div>
+          ) : (
+            <div className="relative overflow-hidden rounded-2xl bg-[#F6E7EB] p-6 sm:p-8">
+              <span className="inline-flex items-center gap-1 rounded-md bg-[#800020] px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
+                <BadgeCheck size={13} aria-hidden="true" /> Verified pros
+              </span>
+              <p className="mt-3 text-xl font-bold leading-tight text-[#1C1917] sm:text-2xl xl:text-3xl">
+                {category.banner_title || `${category.name} at your doorstep`}
+              </p>
+              {(() => {
+                const price = startsAt != null ? formatInr(startsAt) : "";
+                const line = category.banner_subtitle
+                  ? category.banner_subtitle.replaceAll("{price}", price)
+                  : price ? `Starts at ${price}` : "";
+                return line ? <p className="mt-2 text-base text-[#44403C]">{line}</p> : null;
+              })()}
+              {category.banner_button_link && category.banner_button_text && (
+                <Link
+                  href={category.banner_button_link}
+                  className="mt-4 inline-flex items-center rounded-lg bg-[#800020] px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-[#5e0017]"
+                >
+                  {category.banner_button_text}
+                </Link>
+              )}
+            </div>
+          )}
 
           <div className="sticky top-14 z-20 -mx-4 mt-4 flex gap-2 overflow-x-auto border-b border-[#EAE3DC] bg-white px-4 py-2.5 lg:hidden" role="tablist" aria-label="Service groups">
             {groups.map((g) => (
