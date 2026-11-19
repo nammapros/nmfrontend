@@ -1,0 +1,65 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@nammapros/types": [
+        "./src/shared/types/index.ts"
+      ],
+      "@nammapros/types/*": [
+        "./src/shared/types/*"
+      ],
+      "@nammapros/config": [
+        "./src/shared/config/index.ts"
+      ],
+      "@nammapros/config/*": [
+        "./src/shared/config/*"
+      ],
+      "@nammapros/ui": [
+        "./src/shared/ui/index.tsx"
+      ],
+      "@nammapros/ui/*": [
+        "./src/shared/ui/*"
+      ],
+      "@nammapros/api-client": [
+        "./src/shared/api-client/index.ts"
+      ],
+      "@nammapros/api-client/*": [
+        "./src/shared/api-client/*"
+      ]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

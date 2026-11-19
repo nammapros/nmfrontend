@@ -1,0 +1,8 @@
+# Firebase App Hosting runs the Next.js customer site.
+# When deploying from the frontend repository or directory, this file configures compute resources.
+runConfig:
+  minInstances: 0
+  maxInstances: 3
+  concurrency: 80
+  cpu: 1
+  memoryMiB: 1024
