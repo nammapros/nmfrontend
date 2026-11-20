@@ -6,3 +6,24 @@ runConfig:
   concurrency: 80
   cpu: 1
   memoryMiB: 1024
+
+# Firebase web configuration is public and must be present during the Next.js build.
+env:
+  - variable: API_BASE_URL
+    value: https://nammapros-api-production-177323361322.asia-southeast1.run.app
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_API_BASE_URL
+    value: https://nammapros-api-production-177323361322.asia-southeast1.run.app
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: AIzaSyBuYpzTW4Czq_HE8p5SvmrovFnRgOq0WLg
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: nammapro-api.firebaseapp.com
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: nammapro-api
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: "1:177323361322:web:0237be1b48b67546b06f53"
+    availability: [BUILD, RUNTIME]
