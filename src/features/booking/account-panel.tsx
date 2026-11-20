@@ -103,7 +103,7 @@ function AddressFormCard({
       onSubmit={handleSubmit}
       className="overflow-hidden rounded-lg border border-[#800020]/30 bg-white shadow-[0_10px_30px_rgba(28,25,23,0.08)]"
     >
-      <div className="flex items-center justify-between gap-3 border-b border-[#EAE3DC] bg-[#FCF7F8] px-5 py-3.5">
+      <div className="flex items-center justify-between gap-3 border-b border-[#EAE3DC] bg-[#FCF7F8] px-4 sm:px-5 py-3 sm:py-3.5">
         <div>
           <h3 className="text-sm font-bold text-[#1C1917] sm:text-base">
             {mode === "add" ? "Add a new service address" : `Edit ${draft.label || "address"}`}
@@ -116,14 +116,14 @@ function AddressFormCard({
           type="button"
           onClick={onCancel}
           aria-label="Close address form"
-          className="grid h-8 w-8 place-items-center rounded-md border border-[#E2D9D0] bg-white text-[#57534E] hover:text-[#1C1917]"
+          className="grid h-8 w-8 shrink-0 place-items-center rounded-md border border-[#E2D9D0] bg-white text-[#57534E] hover:text-[#1C1917]"
         >
           <X size={15} />
         </button>
       </div>
 
-      <div className="p-5">
-        <div className="mb-5">
+      <div className="p-3.5 sm:p-5">
+        <div className="mb-4 sm:mb-5">
           <GoogleMapsLocationPicker
             key={pickerKey}
             checkServiceability={true}
@@ -135,7 +135,7 @@ function AddressFormCard({
 
         <div className="mb-4 space-y-1.5">
           <span className="block text-xs font-semibold text-[#1C1917]">Address tag</span>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
             {LABEL_PRESETS.map((preset) => {
               const active = draft.label.toLowerCase() === preset.toLowerCase();
               return (
@@ -160,7 +160,7 @@ function AddressFormCard({
               placeholder="Custom label"
               value={draft.label}
               onChange={(e) => onChange({ ...draft, label: e.target.value })}
-              className="h-[34px] w-36 rounded-md border border-[#E2D9D0] px-2.5 text-xs text-[#1C1917] outline-none focus:border-[#800020]"
+              className="h-[34px] flex-1 min-w-[120px] sm:w-36 rounded-md border border-[#E2D9D0] px-2.5 text-xs text-[#1C1917] outline-none focus:border-[#800020]"
             />
           </div>
         </div>
@@ -294,19 +294,19 @@ function AddressFormCard({
           </p>
         )}
 
-        <div className="mt-5 flex flex-wrap justify-end gap-2.5 border-t border-[#F4EFE9] pt-4">
+        <div className="mt-5 flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-2.5 border-t border-[#F4EFE9] pt-4">
           <button
             type="button"
             onClick={onCancel}
             disabled={saving}
-            className="min-h-[40px] rounded-md border border-[#E2D9D0] bg-white px-4 text-xs font-semibold text-[#57534E] hover:border-[#1C1917] hover:text-[#1C1917]"
+            className="w-full sm:w-auto min-h-[42px] sm:min-h-[40px] rounded-md border border-[#E2D9D0] bg-white px-4 text-xs font-semibold text-[#57534E] hover:border-[#1C1917] hover:text-[#1C1917]"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={saving}
-            className="inline-flex min-h-[40px] items-center gap-1.5 rounded-md bg-[#800020] px-5 text-xs font-bold text-white transition hover:bg-[#5e0017] disabled:opacity-60"
+            className="w-full sm:w-auto inline-flex min-h-[42px] sm:min-h-[40px] items-center justify-center gap-1.5 rounded-md bg-[#800020] px-5 text-xs font-bold text-white transition hover:bg-[#5e0017] disabled:opacity-60"
           >
             {saving && <Loader2 size={14} className="animate-spin" />}
             <span>{mode === "add" ? "Save address" : "Save changes"}</span>
@@ -517,7 +517,7 @@ export function AccountPanel() {
         }
         actions={
           phone ? (
-            <>
+            <div className="flex w-full sm:w-auto items-center gap-2">
               <button
                 type="button"
                 onClick={() => {
@@ -525,7 +525,7 @@ export function AccountPanel() {
                   setConfirmRemoveId(null);
                   setAdding({ ...EMPTY_ADDRESS, contact_phone: phone });
                 }}
-                className="inline-flex min-h-[38px] items-center gap-1.5 rounded-md bg-[#800020] px-4 text-xs font-bold text-white shadow-xs transition hover:bg-[#5e0017]"
+                className="flex-1 sm:flex-initial inline-flex min-h-[38px] items-center justify-center gap-1.5 rounded-md bg-[#800020] px-4 text-xs font-bold text-white shadow-xs transition hover:bg-[#5e0017]"
               >
                 <Plus size={14} />
                 <span>Add address</span>
@@ -533,17 +533,17 @@ export function AccountPanel() {
               <button
                 type="button"
                 onClick={signOut}
-                className="inline-flex min-h-[38px] items-center gap-1.5 rounded-md border border-[#E2D9D0] bg-white px-3.5 text-xs font-semibold text-[#57534E] transition hover:border-[#800020] hover:text-[#800020]"
+                className="inline-flex min-h-[38px] items-center justify-center gap-1.5 rounded-md border border-[#E2D9D0] bg-white px-3.5 text-xs font-semibold text-[#57534E] transition hover:border-[#800020] hover:text-[#800020]"
               >
                 <LogOut size={14} />
                 <span>Sign out</span>
               </button>
-            </>
+            </div>
           ) : undefined
         }
       />
 
-      <div className="container max-w-5xl space-y-6 pt-6 sm:pt-8">
+      <div className="container max-w-5xl space-y-4 sm:space-y-6 pt-4 sm:pt-8">
         {feedback && (
           <div
             role="alert"
@@ -579,30 +579,30 @@ export function AccountPanel() {
           </div>
         ) : !phone ? (
           <section className="grid overflow-hidden rounded-lg border border-[#EAE3DC] bg-white shadow-[0_12px_36px_rgba(28,25,23,0.06)] lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="p-6 sm:p-8">
+            <div className="p-5 sm:p-8">
               <span className="inline-flex items-center gap-1.5 rounded-md bg-[#FBECEF] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#800020]">
                 <Phone size={12} />
                 Passwordless Sign-In
               </span>
-              <h2 className="mt-3 text-xl font-bold text-[#1C1917] sm:text-2xl">
+              <h2 className="mt-2.5 sm:mt-3 text-lg font-bold text-[#1C1917] sm:text-2xl">
                 Verify your mobile number in seconds
               </h2>
-              <p className="mt-1.5 text-sm leading-relaxed text-[#57534E]">
+              <p className="mt-1.5 text-xs sm:text-sm leading-relaxed text-[#57534E]">
                 No passwords to remember. Use your 10-digit Indian mobile number to unlock saved homes and past service visits.
               </p>
 
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-5 sm:mt-6 flex flex-col sm:flex-row gap-2.5 sm:gap-3">
                 <button
                   type="button"
                   onClick={() => setShowOtpSheet(true)}
-                  className="inline-flex min-h-[44px] items-center gap-2 rounded-md bg-[#800020] px-5 text-xs font-bold text-white shadow-sm transition hover:bg-[#5e0017]"
+                  className="inline-flex min-h-[44px] w-full sm:w-auto items-center justify-center gap-2 rounded-md bg-[#800020] px-5 text-xs font-bold text-white shadow-sm transition hover:bg-[#5e0017]"
                 >
                   <Phone size={14} />
                   <span>Sign in with Mobile OTP</span>
                 </button>
                 <Link
                   href="/services"
-                  className="inline-flex min-h-[44px] items-center gap-1.5 rounded-md border border-[#E2D9D0] bg-[#FBF8F5] px-4 text-xs font-semibold text-[#1C1917] hover:border-[#800020]"
+                  className="inline-flex min-h-[44px] w-full sm:w-auto items-center justify-center gap-1.5 rounded-md border border-[#E2D9D0] bg-[#FBF8F5] px-4 text-xs font-semibold text-[#1C1917] hover:border-[#800020]"
                 >
                   <span>Browse services</span>
                   <ArrowRight size={14} />
@@ -610,7 +610,7 @@ export function AccountPanel() {
               </div>
 
               {process.env.NODE_ENV !== "production" && (
-                <div className="mt-6 rounded-md border border-dashed border-[#800020]/35 bg-[#FBECEF]/60 p-4">
+                <div className="mt-5 sm:mt-6 rounded-md border border-dashed border-[#800020]/35 bg-[#FBECEF]/60 p-3.5 sm:p-4">
                   <p className="text-xs font-bold text-[#800020]">Quick Dev Sign-In</p>
                   <p className="mt-0.5 text-[11px] text-[#57534E]">
                     Local preview shortcut using test account +919876543210.
@@ -618,7 +618,7 @@ export function AccountPanel() {
                   <button
                     type="button"
                     onClick={quickDevLogin}
-                    className="mt-3 inline-flex min-h-[36px] items-center rounded-md border border-[#800020]/25 bg-white px-3.5 text-xs font-bold text-[#800020] transition hover:bg-[#800020] hover:text-white"
+                    className="mt-3 inline-flex min-h-[36px] w-full sm:w-auto items-center justify-center rounded-md border border-[#800020]/25 bg-white px-3.5 text-xs font-bold text-[#800020] transition hover:bg-[#800020] hover:text-white"
                   >
                     Sign in as Test Customer
                   </button>
@@ -626,7 +626,7 @@ export function AccountPanel() {
               )}
             </div>
 
-            <div className="flex flex-col justify-between bg-gradient-to-br from-[#2B0710] via-[#4D0A1B] to-[#800020] p-6 text-white sm:p-8">
+            <div className="flex flex-col justify-between bg-gradient-to-br from-[#2B0710] via-[#4D0A1B] to-[#800020] p-5 sm:p-8 text-white">
               <div>
                 <span className="inline-flex items-center gap-1.5 rounded-md bg-white/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#FCE7ED]">
                   <Sparkles size={12} />
@@ -668,26 +668,26 @@ export function AccountPanel() {
         ) : (
           <>
             {/* Dimensional Metric Summary Strip */}
-            <section className="grid gap-3.5 sm:grid-cols-3" aria-label="Account summary">
-              <div className="rounded-lg border border-[#EAE3DC] bg-white p-4 shadow-[0_4px_16px_rgba(28,25,23,0.04)]">
+            <section className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3.5" aria-label="Account summary">
+              <div className="rounded-lg border border-[#EAE3DC] bg-white p-3.5 sm:p-4 shadow-[0_4px_16px_rgba(28,25,23,0.04)]">
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-semibold uppercase tracking-wide text-[#78716C]">Verified Mobile</span>
                   <span className="grid h-7 w-7 place-items-center rounded-md bg-[#FBECEF] text-[#800020]">
                     <Phone size={13} />
                   </span>
                 </div>
-                <strong className="mt-1.5 block text-base font-bold text-[#1C1917]">{phone}</strong>
+                <strong className="mt-1 block text-base font-bold text-[#1C1917]">{phone}</strong>
                 <span className="text-[11px] font-medium text-emerald-700">OTP verified session</span>
               </div>
 
-              <div className="rounded-lg border border-[#EAE3DC] bg-white p-4 shadow-[0_4px_16px_rgba(28,25,23,0.04)]">
+              <div className="rounded-lg border border-[#EAE3DC] bg-white p-3.5 sm:p-4 shadow-[0_4px_16px_rgba(28,25,23,0.04)]">
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-semibold uppercase tracking-wide text-[#78716C]">Saved Addresses</span>
                   <span className="grid h-7 w-7 place-items-center rounded-md bg-[#FBECEF] text-[#800020]">
                     <MapPin size={13} />
                   </span>
                 </div>
-                <strong className="mt-1.5 block text-base font-bold text-[#1C1917]">
+                <strong className="mt-1 block text-base font-bold text-[#1C1917]">
                   {addresses.length} {addresses.length === 1 ? "location" : "locations"}
                 </strong>
                 <span className="block truncate text-[11px] text-[#57534E]">
@@ -695,14 +695,14 @@ export function AccountPanel() {
                 </span>
               </div>
 
-              <div className="rounded-lg border border-[#EAE3DC] bg-white p-4 shadow-[0_4px_16px_rgba(28,25,23,0.04)]">
+              <div className="rounded-lg border border-[#EAE3DC] bg-white p-3.5 sm:p-4 shadow-[0_4px_16px_rgba(28,25,23,0.04)]">
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-semibold uppercase tracking-wide text-[#78716C]">Service Alerts</span>
                   <span className="grid h-7 w-7 place-items-center rounded-md bg-[#FBECEF] text-[#800020]">
                     <Bell size={13} />
                   </span>
                 </div>
-                <strong className="mt-1.5 block text-base font-bold text-[#1C1917]">
+                <strong className="mt-1 block text-base font-bold text-[#1C1917]">
                   {preferences ? `${enabledAlerts} of 3 active` : "Standard alerts"}
                 </strong>
                 <span className="text-[11px] text-[#57534E]">Visit updates & receipts</span>
@@ -712,9 +712,9 @@ export function AccountPanel() {
             {/* 2-Column Main Workspace */}
             <div className="grid gap-6 lg:grid-cols-[1.35fr_0.85fr] lg:items-start">
               <section className="space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
                   <div>
-                    <h2 className="text-lg font-bold text-[#1C1917]">Saved addresses</h2>
+                    <h2 className="text-base sm:text-lg font-bold text-[#1C1917]">Saved addresses</h2>
                     <p className="text-xs text-[#57534E]">Choose your default visit address or update directions.</p>
                   </div>
                   {!adding && (
@@ -725,10 +725,10 @@ export function AccountPanel() {
                         setConfirmRemoveId(null);
                         setAdding({ ...EMPTY_ADDRESS, contact_phone: phone });
                       }}
-                      className="inline-flex min-h-[36px] items-center gap-1.5 rounded-md border border-[#800020]/25 bg-white px-3.5 text-xs font-bold text-[#800020] shadow-2xs transition hover:bg-[#800020] hover:text-white"
+                      className="inline-flex min-h-[36px] w-full sm:w-auto items-center justify-center gap-1.5 rounded-md border border-[#800020]/25 bg-white px-3.5 text-xs font-bold text-[#800020] shadow-2xs transition hover:bg-[#800020] hover:text-white"
                     >
                       <Plus size={14} />
-                      <span>Add new</span>
+                      <span>Add new address</span>
                     </button>
                   )}
                 </div>
@@ -770,7 +770,7 @@ export function AccountPanel() {
                             item.is_default ? "border-[#EAE3DC] border-l-4 border-l-[#800020]" : "border-[#EAE3DC]"
                           }`}
                         >
-                          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#F4EFE9] bg-[#FCF9F6] px-4 py-2.5">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-[#F4EFE9] bg-[#FCF9F6] px-3.5 sm:px-4 py-2.5">
                             <div className="flex items-center gap-2">
                               <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#1C1917]">
                                 <span className="grid h-6 w-6 place-items-center rounded bg-[#FBECEF] text-[#800020]">
@@ -785,7 +785,7 @@ export function AccountPanel() {
                               )}
                             </div>
 
-                            <div className="flex flex-wrap items-center gap-1.5">
+                            <div className="flex items-center justify-end gap-1.5 flex-wrap">
                               {!item.is_default && (
                                 <button
                                   type="button"
@@ -840,14 +840,14 @@ export function AccountPanel() {
                             </div>
                           </div>
 
-                          <div className="p-4">
-                            <p className="text-sm font-semibold text-[#1C1917]">
+                          <div className="p-3.5 sm:p-4">
+                            <p className="text-xs sm:text-sm font-semibold text-[#1C1917] leading-relaxed">
                               {[item.house_flat, item.street, item.locality, item.city, item.postal_code]
                                 .filter(Boolean)
                                 .join(", ")}
                             </p>
                             {(item.contact_name || item.contact_phone || item.landmark) && (
-                              <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-[#57534E]">
+                              <div className="mt-2.5 flex flex-wrap gap-1.5 sm:gap-2 text-[11px] text-[#57534E]">
                                 {item.contact_name && (
                                   <span className="rounded bg-[#FBF8F5] px-2 py-0.5 font-medium">
                                     Contact: {item.contact_name}
@@ -898,17 +898,17 @@ export function AccountPanel() {
                 <DataRightsCard />
                 {preferences && (
                   <section className="overflow-hidden rounded-lg border border-[#EAE3DC] bg-white shadow-[0_6px_22px_rgba(28,25,23,0.05)]">
-                    <div className="flex items-center gap-2 border-b border-[#F4EFE9] bg-[#FCF9F6] px-5 py-3.5">
+                    <div className="flex items-center gap-2 border-b border-[#F4EFE9] bg-[#FCF9F6] px-4 sm:px-5 py-3 sm:py-3.5">
                       <Bell size={15} className="text-[#800020]" />
                       <h2 className="text-sm font-bold text-[#1C1917]">Notification preferences</h2>
                     </div>
 
-                    <div className="p-5">
+                    <div className="p-4 sm:p-5">
                       <p className="text-xs leading-relaxed text-[#57534E]">
                         Control how NammaPros sends arrival updates, quotes, and invoices.
                       </p>
 
-                      <div className="mt-4 space-y-2.5">
+                      <div className="mt-3.5 sm:mt-4 space-y-2 sm:space-y-2.5">
                         {(
                           [
                             {
@@ -932,7 +932,7 @@ export function AccountPanel() {
                           return (
                             <label
                               key={opt.field}
-                              className={`flex cursor-pointer items-center justify-between gap-3 rounded-md border px-3.5 py-2.5 transition ${
+                              className={`flex cursor-pointer items-center justify-between gap-3 rounded-md border px-3 sm:px-3.5 py-2.5 transition ${
                                 enabled
                                   ? "border-[#800020]/30 bg-[#FCF7F8]"
                                   : "border-[#EAE3DC] bg-[#FBF8F5]"
@@ -963,7 +963,7 @@ export function AccountPanel() {
                         type="button"
                         disabled={savingPrefs}
                         onClick={() => void savePreferences()}
-                        className="mt-4 inline-flex min-h-[40px] w-full items-center justify-center gap-1.5 rounded-md border border-[#800020] bg-white px-4 text-xs font-bold text-[#800020] transition hover:bg-[#800020] hover:text-white disabled:opacity-60"
+                        className="mt-4 inline-flex min-h-[42px] sm:min-h-[40px] w-full items-center justify-center gap-1.5 rounded-md border border-[#800020] bg-white px-4 text-xs font-bold text-[#800020] transition hover:bg-[#800020] hover:text-white disabled:opacity-60"
                       >
                         {savingPrefs && <Loader2 size={14} className="animate-spin" />}
                         <span>Save preferences</span>
@@ -972,18 +972,18 @@ export function AccountPanel() {
                   </section>
                 )}
 
-                <section className="rounded-lg bg-gradient-to-br from-[#2B0710] via-[#4D0A1B] to-[#800020] p-5 text-white shadow-[0_12px_28px_rgba(128,0,32,0.18)]">
+                <section className="rounded-lg bg-gradient-to-br from-[#2B0710] via-[#4D0A1B] to-[#800020] p-4 sm:p-5 text-white shadow-[0_12px_28px_rgba(128,0,32,0.18)]">
                   <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#FCE7ED]">
                     <ShieldCheck size={12} />
                     Same-Day Availability
                   </span>
-                  <h2 className="mt-1.5 text-base font-bold text-white">Plan your next home visit</h2>
+                  <h2 className="mt-1.5 text-sm sm:text-base font-bold text-white">Plan your next home visit</h2>
                   <p className="mt-1 text-xs leading-relaxed text-[#F3DCE2]">
                     Bundle AC service, tank cleaning, or repairs into one convenient slot with transparent pricing.
                   </p>
                   <Link
                     href="/book"
-                    className="mt-4 inline-flex min-h-[40px] w-full items-center justify-center gap-1.5 rounded-md bg-white px-4 text-xs font-bold text-[#800020] shadow-xs transition hover:bg-[#FAF6F2]"
+                    className="mt-4 inline-flex min-h-[42px] sm:min-h-[40px] w-full items-center justify-center gap-1.5 rounded-md bg-white px-4 text-xs font-bold text-[#800020] shadow-xs transition hover:bg-[#FAF6F2]"
                   >
                     <span>Book a new service</span>
                     <ArrowRight size={14} />
