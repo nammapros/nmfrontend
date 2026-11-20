@@ -37,6 +37,32 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={plusJakartaSans.variable}>
       <body className={`${plusJakartaSans.className} pb-16 md:pb-0`}>
+        {/* Google Tag Manager */}
+        <Script
+          id="gtm-script"
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtm.js?id=GTM-54DPHM9S"
+        />
+        <Script
+          id="gtm-datalayer"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+            `,
+          }}
+        />
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-54DPHM9S"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          />
+        </noscript>
+        {/* End Google Tag Manager */}
         {/* Meta Pixel Code */}
         <Script
           id="meta-pixel"
