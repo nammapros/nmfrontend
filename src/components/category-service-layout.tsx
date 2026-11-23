@@ -12,6 +12,7 @@ import { isUnavailableHere, useZoneService } from "@/components/zone-pricing-pro
 import { getCategoryBannerSrc, serviceListImage } from "@/lib/service-images";
 import { useServiceLocation } from "@/components/location-provider";
 import { citySlug, formatInr } from "@/lib/services";
+import { getCategoryGeneralFaqs } from "@/lib/category-faqs";
 
 /**
  * Category page: left = title, rating, warranty and a menu of service GROUPS
@@ -63,7 +64,9 @@ export function CategoryServiceLayout({ category, services, initialService }: { 
   const [active, setActive] = useState<string>(groups[0]?.key ?? "");
   const [detail, setDetail] = useState<Service | null>(null);
   const [bannerFailed, setBannerFailed] = useState(false);
-  const [categoryFaqs, setCategoryFaqs] = useState<Array<{ question: string; answer: string; serviceName?: string }>>([]);
+  const [categoryFaqs, setCategoryFaqs] = useState<Array<{ question: string; answer: string }>>(() =>
+    getCategoryGeneralFaqs(category.slug, category.name)
+  );
   const [openCatFaq, setOpenCatFaq] = useState<number | null>(0);
   const rating = ratingOf(services);
   const banner = getCategoryBannerSrc(category);
@@ -76,45 +79,51 @@ export function CategoryServiceLayout({ category, services, initialService }: { 
   useEffect(() => {
     let active = true;
     const origin = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000").replace(/\/$/, "");
-    const map = new Map<string, { question: string; answer: string; serviceName?: string }>();
-
-    for (const s of services) {
-      for (const f of s.faqs ?? []) {
-        if (f?.question?.trim() && f?.answer?.trim()) {
-          const key = f.question.trim().toLowerCase();
-          if (!map.has(key)) {
-            map.set(key, { question: f.question.trim(), answer: f.answer.trim(), serviceName: s.name });
-          }
-        }
-      }
-    }
+    const curated = getCategoryGeneralFaqs(category.slug, category.name);
 
     if (category.id) {
       fetch(`${origin}/api/v1/faqs/?category_id=${encodeURIComponent(category.id)}`)
         .then((res) => (res.ok ? res.json() : null))
         .then((data) => {
-          if (!active || !data?.results) return;
-          for (const f of data.results) {
-            if (f?.question?.trim() && f?.answer?.trim()) {
-              const key = f.question.trim().toLowerCase();
-              if (!map.has(key)) {
-                map.set(key, { question: f.question.trim(), answer: f.answer.trim() });
+          if (!active) return;
+          const remoteList: Array<{ question: string; answer: string }> = [];
+          if (Array.isArray(data?.results)) {
+            for (const f of data.results) {
+              if (f?.question?.trim() && f?.answer?.trim()) {
+                remoteList.push({ question: f.question.trim(), answer: f.answer.trim() });
               }
             }
           }
-          if (active) setCategoryFaqs(Array.from(map.values()));
+          // Prioritize category-level FAQs from API, filling up to exactly 5 from curated category FAQs
+          const merged: Array<{ question: string; answer: string }> = [];
+          const seen = new Set<string>();
+          for (const item of remoteList) {
+            const key = item.question.toLowerCase();
+            if (!seen.has(key)) {
+              seen.add(key);
+              merged.push(item);
+            }
+          }
+          for (const item of curated) {
+            const key = item.question.toLowerCase();
+            if (!seen.has(key)) {
+              seen.add(key);
+              merged.push(item);
+            }
+          }
+          setCategoryFaqs(merged.slice(0, 5));
         })
         .catch(() => {
-          if (active) setCategoryFaqs(Array.from(map.values()));
+          if (active) setCategoryFaqs(curated.slice(0, 5));
         });
     } else {
-      setCategoryFaqs(Array.from(map.values()));
+      setCategoryFaqs(curated.slice(0, 5));
     }
 
     return () => {
       active = false;
     };
-  }, [category.id, services]);
+  }, [category.id, category.slug, category.name]);
 
   // Keep the address in the form /services?city=<city>&category=<category>[&service=<service>].
   useEffect(() => {
@@ -303,14 +312,7 @@ export function CategoryServiceLayout({ category, services, initialService }: { 
                           aria-expanded={isOpen}
                           className="flex w-full items-start justify-between gap-3 text-left font-semibold text-sm text-[#1C1917] hover:text-[#800020] transition"
                         >
-                          <div>
-                            <span>{faq.question}</span>
-                            {faq.serviceName && (
-                              <span className="block mt-0.5 text-[11px] font-normal text-[#78716C]">
-                                For {faq.serviceName}
-                              </span>
-                            )}
-                          </div>
+                          <span>{faq.question}</span>
                           <ChevronDown
                             size={16}
                             className={`mt-0.5 shrink-0 text-[#78716C] transition-transform duration-200 ${
