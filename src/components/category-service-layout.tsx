@@ -12,6 +12,7 @@ import { isUnavailableHere, useZoneService } from "@/components/zone-pricing-pro
 import { getCategoryBannerSrc, serviceListImage } from "@/lib/service-images";
 import { useServiceLocation } from "@/components/location-provider";
 import { citySlug, formatInr } from "@/lib/services";
+import { ELECTRICIAN_GROUPS } from "@/lib/electrician-groups";
 import { getCategoryGeneralFaqs } from "@/lib/category-faqs";
 
 /**
@@ -22,7 +23,7 @@ import { getCategoryGeneralFaqs } from "@/lib/category-faqs";
  */
 const REWORK_DAYS = Number(process.env.NEXT_PUBLIC_REWORK_DAYS ?? "30");
 type GroupKey = "service" | "repair" | "install";
-type Group = { key: GroupKey; label: string; services: Service[] };
+type Group = { key: string; label: string; services: Service[] };
 
 function groupKeyOf(service: Service): GroupKey {
   const text = `${service.name} ${service.slug}`.toLowerCase();
@@ -32,6 +33,17 @@ function groupKeyOf(service: Service): GroupKey {
 }
 
 export function groupServices(category: ServiceCategory, services: Service[]): Group[] {
+  if (category.slug === "electrician") {
+    const assigned = new Set<string>();
+    const groups: Group[] = ELECTRICIAN_GROUPS.map(({ key, label, slugs }) => {
+      const members = services.filter((service) => (slugs as readonly string[]).includes(service.slug));
+      members.forEach((service) => assigned.add(service.slug));
+      return { key, label, services: members };
+    }).filter((group) => group.services.length > 0);
+    const additional = services.filter((service) => !assigned.has(service.slug));
+    if (additional.length) groups.push({ key: "other", label: "Other services", services: additional });
+    return groups;
+  }
   const isAc = ["ac", "air-conditioning"].includes(category.slug);
   const labels: Record<GroupKey, string> = {
     service: "Service",
@@ -364,7 +376,7 @@ function ServiceRow({ service: base, onDetails }: { service: Service; onDetails:
   const inCart = options === 1 && pkg ? items.find((e) => e.pkg.id === pkg.id) : undefined;
   const qtyInCart = items.filter((e) => e.service.id === service.id).reduce((n, e) => n + e.quantity, 0);
   const rating = service.average_rating ?? service.rating_avg;
-  const points = (pkg?.inclusions?.length ? pkg.inclusions : service.inclusions ?? []).slice(0, 2);
+  const points = (pkg?.inclusions?.length ? pkg.inclusions : service.inclusions?.length ? service.inclusions : pkg?.exclusions?.length ? pkg.exclusions : service.exclusions ?? []).slice(0, 2);
   const unavailable = options === 1 && isUnavailableHere(pkg);
   const image = serviceListImage(service);
 
@@ -380,7 +392,7 @@ function ServiceRow({ service: base, onDetails }: { service: Service; onDetails:
           </p>
         )}
         <p className="mt-1.5 flex flex-wrap items-center gap-x-2 text-[13px] text-[#1C1917]">
-          <strong>{unit != null ? `${options > 1 || pkg?.price_is_from ? "Starts at " : ""}${formatInr(unit)}` : "Price on inspection"}</strong>
+          <strong>{unit != null ? `${options > 1 || pkg?.price_is_from || service.price_note?.startsWith("Starts at") ? "Starts at " : ""}${formatInr(unit)}` : "Price on inspection"}</strong>
           {mrp != null && <span className="text-[#78716C] line-through"><span className="sr-only">Original price </span>{formatInr(mrp)}</span>}
           {options === 1 && pkg?.duration_minutes ? (
             <span className="inline-flex items-center gap-1 text-[#57534E]"><span aria-hidden="true">•</span><Clock size={12} aria-hidden="true" />{durationText(pkg.duration_minutes)}</span>

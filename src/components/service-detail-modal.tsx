@@ -265,7 +265,7 @@ export function ServiceDetailModal({ service: baseService, onClose, syncUrl = tr
                         <span className="font-normal text-[#57534E]">({totalReviewCount} reviews)</span>
                       </span>
                     )}
-                    {pkg && (
+                    {pkg && pkg.duration_minutes > 0 && (
                       <span className="inline-flex items-center gap-1 font-medium">
                         <Clock size={13} strokeWidth={1.75} className="text-[#800020]" />
                         <span>{pkg.duration_minutes} mins</span>
@@ -277,7 +277,7 @@ export function ServiceDetailModal({ service: baseService, onClose, syncUrl = tr
                 <div className="text-right">
                   <div className="flex items-baseline justify-end gap-2">
                     <span className="font-serif text-2xl font-bold text-[#800020]">
-                      {unitPaise != null ? formatInr(unitPaise) : "Quote"}
+                      {unitPaise != null ? `${service.price_note?.startsWith("Starts at") ? "Starts at " : ""}${formatInr(unitPaise)}` : "Quote"}
                     </span>
                     {showStrike && originalPaise != null && (
                       <span className="text-xs text-[#78716C] line-through">
@@ -335,7 +335,7 @@ export function ServiceDetailModal({ service: baseService, onClose, syncUrl = tr
                                 <span className="ml-1.5 text-xs text-[#78716C] line-through">{formatInr(pOrig)}</span>
                               )}
                             </span>
-                            <span className="mt-0.5 block text-[11px] text-[#78716C]">{p.duration_minutes} mins</span>
+                            {p.duration_minutes > 0 && <span className="mt-0.5 block text-[11px] text-[#78716C]">{p.duration_minutes} mins</span>}
                           </button>
                           {inCart ? (
                             <span className="mt-2.5 inline-flex h-9 items-center justify-between rounded-lg border border-[#800020] bg-[#F6E7EB] text-sm font-bold text-[#800020]">
@@ -585,7 +585,7 @@ export function ServiceDetailModal({ service: baseService, onClose, syncUrl = tr
               </span>
               <div className="flex items-baseline gap-2">
                 <strong className="font-serif text-lg font-bold text-[#1C1917]">
-                  {unitPaise != null ? formatInr(unitPaise) : "Quote on inspection"}
+                  {unitPaise != null ? `${service.price_note?.startsWith("Starts at") ? "Starts at " : ""}${formatInr(unitPaise)}` : "Quote on inspection"}
                 </strong>
                 {showStrike && originalPaise != null && (
                   <span className="text-xs text-[#78716C] line-through">
