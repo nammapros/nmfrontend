@@ -13,6 +13,7 @@ import { getCategoryBannerSrc, serviceListImage } from "@/lib/service-images";
 import { useServiceLocation } from "@/components/location-provider";
 import { citySlug, formatInr } from "@/lib/services";
 import { ELECTRICIAN_GROUPS } from "@/lib/electrician-groups";
+import { TRADE_GROUPS } from "@/lib/trade-groups";
 import { getCategoryGeneralFaqs } from "@/lib/category-faqs";
 
 /**
@@ -33,10 +34,15 @@ function groupKeyOf(service: Service): GroupKey {
 }
 
 export function groupServices(category: ServiceCategory, services: Service[]): Group[] {
-  if (category.slug === "electrician") {
+  const curated: readonly { key: string; label: string; slugs: readonly string[] }[] | null =
+    category.slug === "electrician" ? ELECTRICIAN_GROUPS
+    : category.slug === "plumber" ? TRADE_GROUPS.plumber
+    : category.slug === "carpenter" ? TRADE_GROUPS.carpenter
+    : null;
+  if (curated) {
     const assigned = new Set<string>();
-    const groups: Group[] = ELECTRICIAN_GROUPS.map(({ key, label, slugs }) => {
-      const members = services.filter((service) => (slugs as readonly string[]).includes(service.slug));
+    const groups: Group[] = curated.map(({ key, label, slugs }) => {
+      const members = services.filter((service) => slugs.includes(service.slug));
       members.forEach((service) => assigned.add(service.slug));
       return { key, label, services: members };
     }).filter((group) => group.services.length > 0);
