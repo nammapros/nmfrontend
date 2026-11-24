@@ -10,6 +10,7 @@ import { RecentReviewsCarousel } from "@/components/recent-reviews-carousel";
 import { SpotlightBanners } from "@/components/spotlight-banners";
 import { api, getCatalog } from "@/lib/catalog";
 import { pickPopularServices } from "@/lib/services";
+import { resolveUploadedMediaUrl } from "@/lib/service-images";
 
 export default async function Home() {
   const [{ data }, publicReviews] = await Promise.all([
@@ -23,6 +24,22 @@ export default async function Home() {
     .slice(0, 5);
   const reviews = (publicReviews?.results ?? data?.reviews ?? []).slice(0, 15);
   const banners = data?.banners ?? [];
+  const appBanner = data?.app_download_banner;
+  const appBannerImage = resolveUploadedMediaUrl(appBanner?.desktop_image_url);
+  const appBannerMobileImage = resolveUploadedMediaUrl(appBanner?.mobile_image_url);
+  const appBannerArtwork = appBannerImage ? (
+    <picture>
+      {appBannerMobileImage && <source media="(max-width: 639px)" srcSet={appBannerMobileImage} />}
+      <Image
+        src={appBannerImage}
+        alt={appBanner?.title || "Download the NammaPros app"}
+        width={1600}
+        height={534}
+        unoptimized
+        className="h-auto w-full rounded-2xl"
+      />
+    </picture>
+  ) : null;
   const trust = data?.trust_stats;
 
   return (
@@ -82,17 +99,14 @@ export default async function Home() {
       {/* 6. From homes near you */}
       <RecentReviewsCarousel reviews={reviews} />
 
-      {/* 7. App download banner */}
-      <section className="container py-8 sm:py-12" aria-label="Get the NammaPros app">
-        <Image
-          src="/images/brand/app-download-banner.webp"
-          alt="All your home services, just one place. Download the NammaPros app on the App Store or Google Play."
-          width={1600}
-          height={534}
-          unoptimized
-          className="h-auto w-full rounded-2xl"
-        />
-      </section>
+      {/* 7. App download banner managed from the admin panel */}
+      {appBannerImage && (
+        <section className="container py-8 sm:py-12" aria-label="Get the NammaPros app">
+          {appBanner?.target_url
+            ? <a href={appBanner.target_url} aria-label={appBanner.title || "Open the NammaPros app link"}>{appBannerArtwork}</a>
+            : appBannerArtwork}
+        </section>
+      )}
 
       {/* 8. Best AC service: five AC services, same card as "Most booked" */}
       <MostBookedServices id="best-ac" title="Best AC service" services={acServices} />

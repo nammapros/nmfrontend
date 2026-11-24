@@ -153,6 +153,7 @@ export interface CatalogResponse {
   reviews?: PublicReview[];
   banners?: HomepageBannerItem[];
   spotlight_banners?: HomepageBannerItem[];
+  app_download_banner?: HomepageBannerItem | null;
   trust_stats?: TrustStats;
   demo: boolean;
 }
