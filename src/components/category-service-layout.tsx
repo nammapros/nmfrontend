@@ -378,7 +378,9 @@ function ServiceRow({ service: base, onDetails }: { service: Service; onDetails:
   const options = packages.length;
   const prices = packages.map((p) => getPackageUnitPaise(service, p)).filter((p): p is number => p != null);
   const unit = options > 1 ? (prices.length ? Math.min(...prices) : null) : getPackageUnitPaise(service, pkg);
-  const mrp = options > 1 ? null : (pkg?.mrp_paise ?? (pkg?.original_price_paise && unit != null && pkg.original_price_paise > unit ? pkg.original_price_paise : null));
+  const displayedPackage = options > 1 ? packages.find((p) => getPackageUnitPaise(service, p) === unit) : pkg;
+  const original = displayedPackage?.mrp_paise ?? displayedPackage?.original_price_paise ?? null;
+  const mrp = original != null && unit != null && original > unit ? original : null;
   const inCart = options === 1 && pkg ? items.find((e) => e.pkg.id === pkg.id) : undefined;
   const qtyInCart = items.filter((e) => e.service.id === service.id).reduce((n, e) => n + e.quantity, 0);
   const rating = service.average_rating ?? service.rating_avg;
