@@ -212,52 +212,6 @@ export function BookingDetail({ id, confirmed }: { id: string; confirmed: boolea
     }
   }
 
-  async function payBalance() {
-    if (!booking || busy || paymentUncertain) return;
-    setBusy(true);
-    setError("");
-    setPaymentMessage("Processing your balance payment...");
-    try {
-      const order = await bookingApi.balancePaymentOrder(id, `balance-${id}-${Date.now()}`);
-      setPaymentUncertain(true);
-      await loadCheckout();
-      const Razorpay = (window as RazorpayWindow).Razorpay;
-      if (!Razorpay) throw new Error("Payment checkout could not load.");
-      new Razorpay({
-        key: order.key_id,
-        order_id: order.order_id,
-        amount: order.amount_paise,
-        currency: order.currency,
-        name: "NammaPros",
-        description: `Balance for ${booking.service}`,
-        handler: async (result: CheckoutResult) => {
-          try {
-            await bookingApi.verifyBalancePayment(id, result.razorpay_order_id, result.razorpay_payment_id, result.razorpay_signature);
-            const latest = await bookingApi.booking(id);
-            setBooking(latest);
-            setPaymentUncertain(Boolean(latest.payment_attempt_unresolved));
-            setPaymentMessage(
-              latest.payment_status === "PAID" ? "Balance verified. Fully paid." : "Balance payment is being verified."
-            );
-          } catch {
-            setPaymentMessage("Balance verification pending. Please check again shortly.");
-          } finally {
-            setBusy(false);
-          }
-        },
-        modal: {
-          ondismiss: () => {
-            setBusy(false);
-            setPaymentMessage("Checkout closed. You can pay at visit or retry online.");
-          },
-        },
-      }).open();
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Balance payment checkout is unavailable.");
-      setBusy(false);
-    }
-  }
-
   async function submitReview() {
     if (!booking || busy) return;
     setBusy(true);
@@ -403,12 +357,9 @@ export function BookingDetail({ id, confirmed }: { id: string; confirmed: boolea
                   Remaining balance: {money(booking.price.remaining_balance_paise!)}
                 </h2>
                 <p className="text-xs text-[#57534E]">
-                  You paid {money(booking.price.advance_paise ?? 0)} advance. Pay the balance online or at visit via Cash/UPI.
+                  You paid {money(booking.price.advance_paise ?? 0)} advance. The technician will collect the remaining balance after the job.
                 </p>
                 <div className="booking-actions">
-                  <button className="button button-primary" disabled={busy || paymentUncertain} onClick={payBalance}>
-                    Pay balance online
-                  </button>
                   <button className="button button-outline" disabled={busy} onClick={refreshPayment}>
                     Check payment status
                   </button>
