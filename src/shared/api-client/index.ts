@@ -38,8 +38,8 @@ export function createApiClient(baseUrl: string, timeoutMs = 6000) {
       request<{ average_rating: number | null; review_count: number; results: PublicReview[] }>("/reviews/"),
     serviceability: (body: ServiceabilityRequest) => request<{ supported: boolean; zone_id: string | null }>("/serviceability/check/", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }),
     availability: (params: URLSearchParams) => request<AvailabilityResponse>(`/availability/?${params}`),
-    blogPosts: () => request<{ results: BlogPost[] }>("/blog-posts/", { next: { revalidate: 300 } } as RequestInit),
-    blogPost: (slug: string) => request<BlogPost>(`/blog-posts/${encodeURIComponent(slug)}/`, { next: { revalidate: 300 } } as RequestInit),
+    blogPosts: () => request<{ results: BlogPost[] }>("/blog-posts/", { cache: "no-store" }),
+    blogPost: (slug: string) => request<BlogPost>(`/blog-posts/${encodeURIComponent(slug)}/`, { cache: "no-store" }),
     faqs: (params?: { service_id?: string; category_id?: string }) =>
       request<{ results: FaqItem[] }>(`/faqs/${params ? `?${new URLSearchParams(params as Record<string, string>)}` : ""}`, { next: { revalidate: 300 } } as RequestInit),
     seoPages: () => request<{ results: SeoLandingPage[] }>("/seo-pages/", { next: { revalidate: 300 } } as RequestInit),

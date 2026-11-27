@@ -7,7 +7,7 @@ import { ServiceImage } from "@/components/service-image";
 import { api } from "@/lib/catalog";
 import { formatPostDate, site, toParagraphs } from "@/lib/site";
 
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 async function loadPost(slug: string) {
   try {

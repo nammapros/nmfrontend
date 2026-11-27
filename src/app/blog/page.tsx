@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import type { BlogPost } from "@nammapros/types";
+import { BlogCard } from "@/components/blog-card";
 import { ContentPage } from "@/components/content-page";
-import { ServiceImage } from "@/components/service-image";
 import { api } from "@/lib/catalog";
-import { formatPostDate } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Home care guides",
@@ -12,7 +10,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/blog" },
 };
 
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export default async function BlogIndexPage() {
   const posts = await api.blogPosts().then((r) => r.results).catch(() => null as BlogPost[] | null);
@@ -25,20 +23,7 @@ export default async function BlogIndexPage() {
       ) : (
         <ul className="grid gap-4 sm:grid-cols-2">
           {posts.map((post) => (
-            <li key={post.id}>
-              <Link href={`/blog/${post.slug}`} className="group block h-full overflow-hidden rounded-lg border border-[#EAE3DC] bg-white transition hover:border-[#800020]/40">
-                {post.cover_image_url && (
-                  <div className="relative aspect-[16/9] bg-[#F4EFE9]">
-                    <ServiceImage src={post.cover_image_url} alt="" fit="cover" />
-                  </div>
-                )}
-                <div className="p-4">
-                  <h2 className="text-base font-bold text-[#1C1917] group-hover:text-[#800020]">{post.title}</h2>
-                  {post.excerpt && <p className="mt-1.5 line-clamp-3 text-sm text-[#57534E]">{post.excerpt}</p>}
-                  <p className="mt-3 text-xs text-[#78716C]">{[post.author_name, formatPostDate(post.published_at)].filter(Boolean).join(" · ")}</p>
-                </div>
-              </Link>
-            </li>
+            <li key={post.id}><BlogCard post={post} headingLevel={2} /></li>
           ))}
         </ul>
       )}

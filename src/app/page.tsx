@@ -4,6 +4,8 @@ import {
   Star,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { BlogCard } from "@/components/blog-card";
 import { HomeCategoryGrid } from "@/components/home-category-grid";
 import { MostBookedServices } from "@/components/most-booked-services";
 import { OfferSpotlight } from "@/components/offer-spotlight";
@@ -21,10 +23,12 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [{ data }, publicReviews] = await Promise.all([
+  const [{ data }, publicReviews, blogPosts] = await Promise.all([
     getCatalog(),
     api.publicReviews().catch(() => null),
+    api.blogPosts().catch(() => null),
   ]);
+  const recentPosts = blogPosts?.results.slice(0, 3) ?? [];
   const services = data?.services ?? [];
   const acServices = services
     .filter((s) => s.is_active !== false && (s.category === "ac" || s.category === "air-conditioning"))
@@ -183,6 +187,21 @@ export default async function Home() {
 
       {/* 6. From homes near you */}
       <RecentReviewsCarousel reviews={reviews} />
+
+      {recentPosts.length > 0 && (
+        <section className="container py-8 sm:py-12" aria-labelledby="home-guides-heading">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wide text-[#800020]">From NammaPros</p>
+              <h2 id="home-guides-heading" className="mt-1 text-2xl font-bold text-[#1C1917]">Home care guides</h2>
+            </div>
+            <Link href="/blog" className="text-sm font-semibold text-[#800020] hover:underline">View all guides</Link>
+          </div>
+          <ul className="grid gap-4 md:grid-cols-3">
+            {recentPosts.map((post) => <li key={post.id}><BlogCard post={post} /></li>)}
+          </ul>
+        </section>
+      )}
 
       {/* 7. App download banner managed from the admin panel */}
       {appBannerImage && (
