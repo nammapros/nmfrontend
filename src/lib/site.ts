@@ -5,7 +5,9 @@
  */
 export const site = {
   name: "NammaPros",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  url: process.env.NEXT_PUBLIC_SITE_URL && !process.env.NEXT_PUBLIC_SITE_URL.includes("localhost")
+    ? process.env.NEXT_PUBLIC_SITE_URL
+    : "https://nammapros.com",
   whatsappNumber: (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "").replace(/\D/g, ""),
   supportPhone: process.env.NEXT_PUBLIC_SUPPORT_PHONE ?? "",
   supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "",

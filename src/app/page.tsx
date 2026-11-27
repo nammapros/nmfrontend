@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import {
   CheckCircle2,
   Star,
@@ -11,6 +12,13 @@ import { SpotlightBanners } from "@/components/spotlight-banners";
 import { api, getCatalog } from "@/lib/catalog";
 import { pickPopularServices } from "@/lib/services";
 import { resolveUploadedMediaUrl } from "@/lib/service-images";
+
+export const metadata: Metadata = {
+  title: "NammaPros | India's Trusted Home Services & Appliance Repair",
+  description:
+    "Book verified home technicians in Chennai & Tamil Nadu. AC service & repair, washing machine repair, refrigerator, TV installation & water tank cleaning with upfront pricing and 30-day warranty.",
+  alternates: { canonical: "/" },
+};
 
 export default async function Home() {
   const [{ data }, publicReviews] = await Promise.all([
@@ -42,8 +50,85 @@ export default async function Home() {
   ) : null;
   const trust = data?.trust_stats;
 
+  const siteUrl = "https://nammapros.com";
+  const businessJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "HomeAndConstructionBusiness",
+    name: "NammaPros",
+    alternateName: "NammaPros Home Services",
+    url: siteUrl,
+    logo: `${siteUrl}/images/brand/logo.png`,
+    image: `${siteUrl}/images/brand/hero-technicians-pair.webp`,
+    description:
+      "Verified home technicians across Chennai and Tamil Nadu for AC repair, washing machine service, refrigerator repair, TV wall mounting, water tank cleaning, and home appliances.",
+    telephone: "+919629025814",
+    priceRange: "₹₹",
+    currenciesAccepted: "INR",
+    paymentAccepted: "Cash, Credit Card, Debit Card, UPI, Net Banking",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Chennai",
+      addressRegion: "Tamil Nadu",
+      addressCountry: "IN",
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 13.0827,
+      longitude: 80.2707,
+    },
+    areaServed: [
+      { "@type": "City", name: "Chennai" },
+      { "@type": "City", name: "Coimbatore" },
+      { "@type": "City", name: "Madurai" },
+      { "@type": "City", name: "Trichy" },
+      { "@type": "City", name: "Salem" },
+      { "@type": "AdministrativeArea", name: "Tamil Nadu" },
+    ],
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        opens: "08:00",
+        closes: "21:00",
+      },
+    ],
+    aggregateRating:
+      trust?.average_rating && trust.review_count > 0
+        ? {
+            "@type": "AggregateRating",
+            ratingValue: trust.average_rating,
+            reviewCount: trust.review_count,
+            bestRating: "5",
+            worstRating: "1",
+          }
+        : undefined,
+  };
+
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "NammaPros",
+    url: siteUrl,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${siteUrl}/services?category={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
+
   return (
     <main className="bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(businessJsonLd).replace(/</g, "\\u003c") }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd).replace(/</g, "\\u003c") }}
+      />
       {/* 1. Split Hero Banner (Blush Rose #FBECEF + Technician on Right) */}
       <section id="categories" className="relative scroll-mt-20 overflow-hidden border-b border-[#EAE3DC] bg-white pt-6 pb-8 text-[#1C1917] sm:pt-8 sm:pb-0">
         <div className="container grid items-end gap-6 lg:grid-cols-[1.08fr_0.92fr] lg:gap-6">

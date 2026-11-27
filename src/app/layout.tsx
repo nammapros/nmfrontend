@@ -17,20 +17,87 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta",
   display: "swap",
 });
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL && !process.env.NEXT_PUBLIC_SITE_URL.includes("localhost")
+  ? process.env.NEXT_PUBLIC_SITE_URL
+  : "https://nammapros.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: { default: "nammapros. | Home services made clearer", template: "%s | nammapros." },
-  description:
-    "Namma area, namma pros. Book verified home technicians across Chennai and Tamil Nadu with upfront pricing and a 30-day warranty.",
-  alternates: { canonical: "/" },
-  openGraph: {
-    title: "nammapros. | What’s not working at home?",
-    description: "Pick, schedule, relax — verified pros at your doorstep in Chennai & Tamil Nadu.",
-    siteName: "nammapros.",
-    type: "website",
+  title: {
+    default: "NammaPros | Verified Home Services & Appliance Repair in Chennai",
+    template: "%s | NammaPros",
   },
+  description:
+    "Book verified home technicians across Chennai and Tamil Nadu. AC service & repair, washing machine repair, refrigerator service, TV installation, water tank cleaning, and more with upfront pricing & 30-day warranty.",
+  keywords: [
+    "home services chennai",
+    "ac repair chennai",
+    "ac service near me",
+    "washing machine repair chennai",
+    "refrigerator repair chennai",
+    "tv wall mount installation chennai",
+    "water tank cleaning chennai",
+    "underground sump cleaning chennai",
+    "geyser repair chennai",
+    "ro water purifier service chennai",
+    "microwave oven repair chennai",
+    "kitchen chimney cleaning chennai",
+    "mosquito net installation chennai",
+    "sofa cleaning chennai",
+    "verified technicians chennai",
+    "appliance repair tamil nadu",
+    "nammapros",
+  ],
+  authors: [{ name: "NammaPros", url: "https://nammapros.com" }],
+  creator: "NammaPros",
+  publisher: "NammaPros Home Services",
+  formatDetection: { email: false, address: false, telephone: false },
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "NammaPros | Verified Home Services & Appliance Repair in Chennai",
+    description:
+      "Pick, schedule, relax — verified home technicians at your doorstep in Chennai & Tamil Nadu with upfront pricing and 30-day service warranty.",
+    siteName: "NammaPros",
+    url: "https://nammapros.com",
+    locale: "en_IN",
+    type: "website",
+    images: [
+      {
+        url: "/images/brand/hero-technicians-pair.webp",
+        width: 1200,
+        height: 630,
+        alt: "NammaPros - Verified Home Services Technicians",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "NammaPros | Verified Home Services in Chennai & Tamil Nadu",
+    description:
+      "Book verified home technicians across Chennai and Tamil Nadu with upfront pricing and a 30-day warranty.",
+    images: ["/images/brand/hero-technicians-pair.webp"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-icon.png", type: "image/png" }],
+  },
+  manifest: "/manifest.webmanifest",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

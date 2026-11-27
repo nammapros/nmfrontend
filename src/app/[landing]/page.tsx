@@ -43,13 +43,31 @@ export default async function CityLandingPage({ params }: { params: Promise<{ la
   const services = page.services ?? [];
   const city = page.city?.name ?? "";
   const prices = services.map((s) => s.starting_price_paise).filter((p): p is number => p != null);
+  const siteUrl = "https://nammapros.com";
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+      ...(page.category
+        ? [{ "@type": "ListItem", position: 2, name: page.category.name, item: `${siteUrl}/services?category=${page.category.slug}` }]
+        : []),
+      {
+        "@type": "ListItem",
+        position: page.category ? 3 : 2,
+        name: page.heading,
+        item: `${siteUrl}/${page.slug}`,
+      },
+    ],
+  };
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Service",
     name: page.heading,
     serviceType: page.category?.name,
     areaServed: city ? { "@type": "City", name: city } : undefined,
-    provider: { "@type": "Organization", name: site.name, url: site.url },
+    provider: { "@type": "Organization", name: site.name, url: siteUrl },
     offers: prices.length
       ? { "@type": "AggregateOffer", priceCurrency: "INR", lowPrice: Math.min(...prices) / 100, offerCount: services.length }
       : undefined,
@@ -64,6 +82,7 @@ export default async function CityLandingPage({ params }: { params: Promise<{ la
 
   return (
     <main className="bg-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd).replace(/</g, "\\u003c") }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       {faqLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd).replace(/</g, "\\u003c") }} />}
 
